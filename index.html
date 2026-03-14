@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HL-Rent: Executive Terminal</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -69,10 +69,10 @@
     .settings-btn {
         background: rgba(204, 0, 0, 0.1); border: 1px solid var(--accent-red); color: #fff; padding: 8px 16px;
         font-family: 'Oswald', sans-serif; font-size: 14px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+        white-space: nowrap;
     }
     .settings-btn:hover { background: var(--accent-red); box-shadow: 0 0 15px rgba(204, 0, 0, 0.4); }
     
-    /* Элементы, видимые ТОЛЬКО в админке */
     #admin-exit-btn { display: none; }
     body.admin-mode #admin-exit-btn { display: flex; align-items: center; gap: 8px; color: #a0a0a5; font-family: 'Oswald', sans-serif; font-size: 16px; cursor: pointer; transition: color 0.3s; }
     body.admin-mode #admin-exit-btn:hover { color: #fff; }
@@ -83,7 +83,7 @@
        ПАНЕЛЬ НАСТРОЕК (DRAWER)
     ========================================= */
     #settings-drawer {
-        position: fixed; top: 0; right: 0; bottom: 0; width: 420px;
+        position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 100vw;
         background: rgba(5, 5, 8, 0.98); backdrop-filter: blur(15px); border-left: 2px solid var(--accent-red);
         z-index: 200; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column;
@@ -113,7 +113,7 @@
         opacity: 0; visibility: hidden; transition: all 0.3s ease;
     }
     #pin-overlay.active { opacity: 1; visibility: visible; }
-    .pin-box { background: #050505; border: 1px solid #333; padding: 40px; text-align: center; box-shadow: 0 0 50px rgba(204,0,0,0.1); }
+    .pin-box { background: #050505; border: 1px solid #333; padding: 40px; text-align: center; box-shadow: 0 0 50px rgba(204,0,0,0.1); width: 100%; max-width: 400px; }
     .pin-display { font-family: 'Oswald', sans-serif; font-size: 40px; color: #fff; letter-spacing: 15px; margin: 20px 0; height: 60px; }
     .pin-display.error { color: var(--accent-red); animation: shake 0.4s; }
     .pin-numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
@@ -139,11 +139,16 @@
 
     .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
     .bento-item { border-radius: 4px; border: 1px solid #1a1a1f; background: rgba(10,10,12,0.6); padding: 25px; position: relative; overflow: hidden; backdrop-filter: blur(5px); }
-    .bento-col-3 { grid-column: span 3; }
-    .bento-col-4 { grid-column: span 4; } 
-    .bento-col-6 { grid-column: span 6; } 
-    .bento-col-8 { grid-column: span 8; } 
-    .bento-col-12 { grid-column: span 12; }
+    
+    /* АДАПТИВНАЯ СЕТКА BENTO */
+    .bento-col-3, .bento-col-4, .bento-col-6, .bento-col-8, .bento-col-12 { grid-column: span 12; }
+    @media (min-width: 768px) {
+        .bento-col-3 { grid-column: span 3; }
+        .bento-col-4 { grid-column: span 4; } 
+        .bento-col-6 { grid-column: span 6; } 
+        .bento-col-8 { grid-column: span 8; } 
+    }
+
     .value-huge { font-family: 'Oswald', sans-serif; font-size: 3.5rem; line-height: 1; color: #fff; font-weight: 500; }
     
     .stat-bar-bg { width: 100%; height: 6px; background: #1a1a1f; border-radius: 3px; margin-top: 8px; overflow: hidden;}
@@ -174,14 +179,46 @@
     .btn-revert { background: transparent; border: 1px solid #555; color: #a0a0a5; }
     .btn-revert:hover { border-color: #fff; color: #fff; }
 
-    .pin-display.text-green-500 {
-        color: #10b981;
-        animation: successPulse 0.5s ease;
-    }
+    .pin-display.text-green-500 { color: #10b981; animation: successPulse 0.5s ease; }
+    @keyframes successPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-    @keyframes successPulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
+    /* =========================================
+       АДАПТИВ ПОД МОБИЛКИ (МЕДИАЗАПРОСЫ)
+    ========================================= */
+    @media (max-width: 767px) {
+        .topbar { padding: 10px 15px; height: auto; flex-wrap: wrap; justify-content: space-between; }
+        .nav-menu { width: 100%; overflow-x: auto; padding-bottom: 5px; margin-top: 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-wrap: nowrap; }
+        .nav-menu::-webkit-scrollbar { display: none; }
+        .nav-btn { font-size: 14px; padding: 8px 15px; white-space: nowrap; flex-shrink: 0; }
+        .nav-btn.admin-btn { margin-left: 5px; }
+        .tab-content { padding: 140px 15px 30px 15px; } /* Отступ под съехавшее меню */
+        .bento-item { padding: 15px; }
+        .value-huge { font-size: 2.5rem; }
+        #settings-drawer { border-left: none; }
+        .settings-btn { padding: 6px 12px; font-size: 12px; }
+        .pin-box { width: 95%; padding: 25px 15px; }
+        .pin-display { font-size: 32px; letter-spacing: 10px; }
+        .pin-btn { padding: 12px 0; font-size: 20px; }
+        .bento-grid { gap: 15px; }
+        h2.text-4xl { font-size: 1.8rem; line-height: 1.2; }
+        .admin-actions { flex-direction: column-reverse; gap: 10px; width: 100%; }
+        .btn-admin { width: 100%; text-align: center; }
+        .text-5xl { font-size: 2.5rem; }
+        /* Скрытие десктопного текста, если нужно */
+        .hide-mobile { display: none; }
+
+        /* Адаптив админской таблицы под мобилки (Карточки) */
+        .admin-table-container { overflow-x: visible; }
+        .admin-table { min-width: auto; }
+        .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; width: 100%; }
+        .admin-table thead { display: none; }
+        .admin-table tr { margin-bottom: 20px; background: rgba(10,10,12,0.6); border: 1px solid #1a1a1f; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .admin-table td { display: flex; justify-content: space-between; align-items: center; border: none; border-bottom: 1px solid #1a1a1f; padding: 12px 0; text-align: right; }
+        .admin-table td:last-child { border-bottom: none; padding-bottom: 0; }
+        .admin-table td:first-child { padding-top: 0; }
+        .admin-table td::before { content: attr(data-label); font-family: 'Oswald', sans-serif; font-size: 12px; color: #6b6b75; text-transform: uppercase; font-weight: 500; margin-right: 15px; flex-shrink: 0; text-align: left; }
+        .admin-table input { width: 65%; max-width: none; text-align: right !important; padding: 10px; font-size: 14px; background: #000; border: 1px solid #333; border-radius: 4px; }
+        .admin-table input:focus { border-color: var(--accent-red); background: #111; }
     }
 </style>
 
@@ -192,12 +229,17 @@
 
 <!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
 <header id="topbar" class="topbar">
-    <div class="flex items-center gap-4">
-        <h1 class="text-3xl text-white font-strict tracking-wider">HL<span class="text-[#cc0000]">-</span>RENT</h1>
+    <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+        <h1 class="text-2xl md:text-3xl text-white font-strict tracking-wider">HL<span class="text-[#cc0000]">-</span>RENT</h1>
         <span class="text-[#6b6b75] text-xs font-bold tracking-[0.2em] uppercase border-l border-[#333] pl-4 py-1 hidden md:block">Samui Executive Deck</span>
+        
+        <div class="md:hidden block text-right">
+            <button class="settings-btn" id="btn-toggle-settings-mob" onclick="toggleSettings()"><i class="fa-solid fa-sliders"></i> <span class="hidden sm:inline">PARAMS</span></button>
+        </div>
+
         <!-- Кнопка выхода из админки -->
         <div id="admin-exit-btn" onclick="exitAdminMode()">
-            <i class="fa-solid fa-arrow-left"></i> ВЕРНУТЬСЯ В ТЕРМИНАЛ
+            <i class="fa-solid fa-arrow-left"></i> <span class="hidden md:inline">ВЕРНУТЬСЯ В ТЕРМИНАЛ</span><span class="md:hidden">НАЗАД</span>
         </div>
     </div>
     
@@ -209,7 +251,7 @@
         <div class="nav-btn admin-btn" onclick="openPinModal()"><i class="fa-solid fa-lock mr-2"></i> PRO-АДМИНКА</div>
     </nav>
     
-    <div class="hidden lg:block text-right">
+    <div class="hidden md:block text-right">
         <button class="settings-btn" id="btn-toggle-settings" onclick="toggleSettings()"><i class="fa-solid fa-sliders"></i> ENGINE PARAMS</button>
     </div>
 </header>
@@ -255,7 +297,7 @@
     
     <!-- TAB 0: СТРАТЕГИЯ -->
     <section id="tab-strategy" class="tab-content active">
-        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex justify-between items-end">
+        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
             <div><h2 class="text-4xl text-white font-strict tracking-wide">СТРАТЕГИЧЕСКИЙ АНАЛИЗ</h2><p class="text-[#6b6b75] mt-1 font-medium tracking-widest uppercase text-xs">Фьючерсная оценка и структура портфеля</p></div>
         </div>
 
@@ -272,7 +314,7 @@
 
             <div class="bento-item bento-col-8 flex flex-col justify-center">
                 <p class="text-xs text-[#6b6b75] font-bold tracking-widest uppercase mb-6"><i class="fa-solid fa-scale-balanced mr-2"></i>Модель диверсификации портфеля (<span id="gl-total-units">19</span> единиц)</p>
-                <div class="grid grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                     <div>
                         <p class="text-3xl text-white font-strict mb-1"><span id="gl-auto-pct">85.7%</span> <span class="text-lg text-[#6b6b75]">/ АВТОПАРК (<span id="gl-auto-qty">7</span> шт)</span></p>
                         <p class="text-sm text-[#a0a0a5] mb-3">Якорный актив (~<span id="gl-auto-inv">2.99</span> МЛН THB). Обеспечивает сохранность капитала.</p>
@@ -288,11 +330,11 @@
 
             <!-- Фьючерсный анализ -->
             <div class="bento-item bento-col-12" style="border-left: 3px solid #cc0000; margin-top: 10px;">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                     <h3 class="text-2xl text-white font-strict tracking-wide">ФЬЮЧЕРСНЫЙ АНАЛИЗ (PROJECTION 2026-2029)</h3>
                     <span class="bg-[#cc0000] text-white text-xs font-bold px-3 py-1 uppercase tracking-widest">Интеграция в готовую систему</span>
                 </div>
-                <div class="grid grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     <div class="bg-[#050505] border border-[#1a1a1f] p-5">
                         <p class="text-[#cc0000] font-strict text-xl mb-2">ЭТАП 1: ИНТЕГРАЦИЯ (2026)</p>
                         <ul class="text-sm text-[#a0a0a5] space-y-2">
@@ -317,20 +359,20 @@
                 </div>
             </div>
 
-            <div class="bento-item bento-col-12 flex justify-between items-center bg-[url('https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2000')] bg-cover bg-center">
+            <div class="bento-item bento-col-12 flex flex-col md:flex-row justify-between items-start md:items-center bg-[url('https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2000')] bg-cover bg-center gap-4">
                 <div class="absolute inset-0 bg-[#050505] opacity-90"></div>
-                <div class="relative z-10">
+                <div class="relative z-10 w-full md:w-auto">
                     <p class="text-xs text-[#6b6b75] font-bold tracking-widest uppercase mb-1">Ожидаемый возврат капитала (Остаточная стоимость парка + Кэшфлоу за 3 года)</p>
                     <p class="text-3xl text-white font-strict tracking-wider">ОЦЕНКА ВОЗВРАТА КАПИТАЛА</p>
                 </div>
-                <div class="relative z-10 text-right"><p class="text-5xl text-green-500 font-strict">~ <span id="gl-terminal-val">5.7</span> <span class="text-2xl text-[#6b6b75]">МЛН THB</span></p></div>
+                <div class="relative z-10 text-left md:text-right"><p class="text-5xl text-green-500 font-strict">~ <span id="gl-terminal-val">5.7</span> <span class="text-2xl text-[#6b6b75]">МЛН THB</span></p></div>
             </div>
         </div>
     </section>
 
     <!-- TAB 1: OVERVIEW -->
     <section id="tab-overview" class="tab-content flex flex-col">
-        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex justify-between items-end">
+        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
             <div><h2 class="text-4xl text-white font-strict tracking-wide">АНАЛИЗ РЫНКА АРЕНДЫ</h2><p class="text-[#6b6b75] mt-1 font-medium tracking-widest uppercase text-xs">Таиланд 2025-2026 / Сравнение локаций / Загрузка</p></div>
         </div>
 
@@ -338,17 +380,17 @@
             <div class="bento-item bento-col-12 border-l-4 border-l-[#cc0000] bg-[rgba(204,0,0,0.02)]">
                 <h3 class="text-2xl text-white mb-3 font-strict tracking-wide">РЫНОК ТАИЛАНДА (МАКРО-ОБЗОР)</h3>
                 <p class="text-[#a0a0a5] text-sm leading-relaxed mb-5">Рынок аренды транспортных средств в Таиланде оценивается примерно в 40 млрд тайских бат.</p>
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Объем рынка</p><p class="text-2xl text-white font-strict mt-1">40 МЛРД</p></div>
-                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Темп роста</p><p class="text-2xl text-[#cc0000] font-strict mt-1">+9.95%</p></div>
-                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Доля тур. сектора</p><p class="text-2xl text-white font-strict mt-1">71.2%</p></div>
-                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Целевая загрузка</p><p class="text-2xl text-green-500 font-strict mt-1">65-70%</p></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Объем рынка</p><p class="text-xl sm:text-2xl text-white font-strict mt-1">40 МЛРД</p></div>
+                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Темп роста</p><p class="text-xl sm:text-2xl text-[#cc0000] font-strict mt-1">+9.95%</p></div>
+                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Доля тур. сектора</p><p class="text-xl sm:text-2xl text-white font-strict mt-1">71.2%</p></div>
+                    <div class="bg-[#050505] border border-[#1a1a1f] p-3 text-center rounded"><p class="text-[10px] text-[#6b6b75] uppercase tracking-widest">Целевая загрузка</p><p class="text-xl sm:text-2xl text-green-500 font-strict mt-1">65-70%</p></div>
                 </div>
             </div>
 
             <div class="bento-item bento-col-12">
                 <h3 class="text-xl text-white mb-4 font-strict tracking-wide">МАТРИЦА ЛОКАЦИЙ (САМУИ vs ПХУКЕТ vs БАНГКОК)</h3>
-                <div class="grid grid-cols-3 gap-6 items-stretch">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-stretch">
                     <div class="bg-[#050505] border border-[#cc0000] p-5 relative overflow-hidden flex flex-col">
                         <div class="absolute top-0 right-0 bg-[#cc0000] text-white text-[10px] font-bold px-2 py-1 uppercase">Наш фокус</div>
                         <h4 class="text-lg text-white font-strict mb-2"><i class="fa-solid fa-location-dot text-[#cc0000] mr-2"></i>САМУИ</h4>
@@ -398,7 +440,7 @@
 
     <!-- TAB 2: SAMUI FLEET -->
     <section id="tab-samui-fleet" class="tab-content flex flex-col">
-        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex justify-between items-end">
+        <div class="mb-8 border-b border-[#1a1a1f] pb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
             <div><h2 class="text-4xl text-white font-strict tracking-wide">ГАРАЖ САМУИ</h2></div>
         </div>
         <div id="fleet-container-auto" class="bento-grid mb-8"></div>
@@ -449,21 +491,21 @@
 
     <!-- TAB 5: АДМИНКА (СКРЫТАЯ) -->
     <section id="tab-admin" class="tab-content flex flex-col">
-        <div class="mb-4 flex justify-between items-end border-b border-[#333] pb-4">
+        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-[#333] pb-4">
             <div>
-                <h2 class="text-4xl text-[#cc0000] font-strict tracking-wide"><i class="fa-solid fa-lock text-white mr-3"></i>ПАНЕЛЬ УПРАВЛЕНИЯ БАЗОЙ</h2>
+                <h2 class="text-3xl sm:text-4xl text-[#cc0000] font-strict tracking-wide"><i class="fa-solid fa-lock text-white mr-3"></i>ПАНЕЛЬ УПРАВЛЕНИЯ</h2>
                 <p class="text-[#a0a0a5] mt-1 font-medium tracking-widest uppercase text-xs">Все изменения здесь становятся эталоном (Baseline) для модели.</p>
             </div>
             <div class="admin-actions mt-0">
-                <button class="btn-admin btn-revert" onclick="hardResetAdmin()"><i class="fa-solid fa-rotate-left mr-2"></i>СБРОСИТЬ ВСЁ</button>
-                <button class="btn-admin btn-apply" onclick="applyAdmin()"><i class="fa-solid fa-check-double mr-2"></i>ПРИМЕНИТЬ И ВЫЙТИ</button>
+                <button class="btn-admin btn-revert w-full sm:w-auto" onclick="hardResetAdmin()"><i class="fa-solid fa-rotate-left mr-2"></i>СБРОСИТЬ ВСЁ</button>
+                <button class="btn-admin btn-apply w-full sm:w-auto" onclick="applyAdmin()"><i class="fa-solid fa-check-double mr-2"></i>ПРИМЕНИТЬ И ВЫЙТИ</button>
             </div>
         </div>
 
         <!-- Global settings in Admin (Narrowed blocks) -->
-        <div class="grid grid-cols-12 gap-6 mb-8">
+        <div class="grid grid-cols-12 gap-4 md:gap-6 mb-8">
             <!-- Smart Budget Widget (Narrower: 3/12) -->
-            <div class="col-span-12 lg:col-span-3 bg-[#050505] border border-[#cc0000] p-4 relative overflow-hidden flex flex-col justify-center">
+            <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-[#050505] border border-[#cc0000] p-4 relative overflow-hidden flex flex-col justify-center">
                 <div class="absolute top-0 right-0 bg-[#cc0000] text-white text-[10px] font-bold px-2 py-1 uppercase">SMART FIT</div>
                 <h3 class="text-xs text-white font-strict mb-2">ЦЕЛЕВОЙ БЮДЖЕТ (THB)</h3>
                 <div class="flex gap-2">
@@ -474,7 +516,7 @@
             </div>
 
             <!-- Auto Settings (Narrower: 3/12) -->
-            <div class="col-span-12 lg:col-span-3 bg-[#050505] border border-[#1a1a1f] p-4">
+            <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-[#050505] border border-[#1a1a1f] p-4">
                 <h3 class="text-xs text-white font-strict mb-3 border-b border-[#333] pb-1">АВТО: МОДЕЛЬ СДАЧИ</h3>
                 <div class="input-group mb-3">
                     <label class="flex justify-between items-end text-[10px]">
@@ -483,14 +525,14 @@
                     </label>
                     <input type="range" id="adm-auto-short" min="0" max="100" step="1" oninput="updateAdminSliders()">
                 </div>
-                <div class="input-group">
+                <div class="input-group mb-0">
                     <label class="text-[10px]">Загрузка (%)</label>
                     <input type="number" id="adm-auto-load" class="w-full bg-[#111] border border-[#333] text-white p-1 font-strict text-center text-sm" max="100" min="0">
                 </div>
             </div>
 
             <!-- Moto Settings (Narrower: 3/12) -->
-            <div class="col-span-12 lg:col-span-3 bg-[#050505] border border-[#1a1a1f] p-4">
+            <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-[#050505] border border-[#1a1a1f] p-4">
                 <h3 class="text-xs text-white font-strict mb-3 border-b border-[#333] pb-1">МОТО: МОДЕЛЬ СДАЧИ</h3>
                 <div class="input-group mb-3">
                     <label class="flex justify-between items-end text-[10px]">
@@ -499,15 +541,15 @@
                     </label>
                     <input type="range" id="adm-moto-short" min="0" max="100" step="1" oninput="updateAdminSliders()">
                 </div>
-                <div class="input-group">
+                <div class="input-group mb-0">
                     <label class="text-[10px]">Загрузка (%)</label>
                     <input type="number" id="adm-moto-load" class="w-full bg-[#111] border border-[#333] text-white p-1 font-strict text-center text-sm" max="100" min="0">
                 </div>
             </div>
             
             <!-- Spacer for info (3/12) -->
-            <div class="col-span-12 lg:col-span-3 flex flex-col justify-end pb-2">
-                 <p class="text-[10px] text-[#6b6b75] text-right italic uppercase">Настройка приоритетов бюджета: Дефицит режет ТОП, Профицит набивает НИЗ.</p>
+            <div class="col-span-12 md:col-span-6 lg:col-span-3 flex flex-col justify-end pb-2">
+                 <p class="text-[10px] text-[#6b6b75] text-left md:text-right italic uppercase">Настройка приоритетов бюджета: Дефицит режет ТОП, Профицит набивает НИЗ.</p>
             </div>
         </div>
 
@@ -670,20 +712,20 @@
             // ОБНОВЛЕННАЯ КАРТОЧКА: с разбивкой костов и выделенным ROI
             const html = `<div class="bento-item bento-col-6" style="${borderClass}">
                 <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-2xl text-white font-strict">${v.name}</h3>
-                    <span class="bg-[#333] text-white text-xs font-bold px-2 py-1">${v.qty} ЕД.</span>
+                    <h3 class="text-xl md:text-2xl text-white font-strict">${v.name}</h3>
+                    <span class="bg-[#333] text-white text-xs font-bold px-2 py-1 whitespace-nowrap">${v.qty} ЕД.</span>
                 </div>
                 
                 <div class="mb-4 flex items-center gap-2">
-                    <span class="text-xs text-[#6b6b75] font-bold tracking-widest uppercase">ГОДОВОЙ ROI:</span>
-                    <span class="text-lg text-[#cc0000] font-strict bg-[rgba(204,0,0,0.15)] px-2 py-0.5 rounded border border-[rgba(204,0,0,0.3)] shadow-[0_0_15px_rgba(204,0,0,0.2)]">${fmtPct(v.roi)}</span>
+                    <span class="text-[10px] md:text-xs text-[#6b6b75] font-bold tracking-widest uppercase">ГОДОВОЙ ROI:</span>
+                    <span class="text-base md:text-lg text-[#cc0000] font-strict bg-[rgba(204,0,0,0.15)] px-2 py-0.5 rounded border border-[rgba(204,0,0,0.3)] shadow-[0_0_15px_rgba(204,0,0,0.2)]">${fmtPct(v.roi)}</span>
                 </div>
                 
                 <ul class="data-list mt-2">
                     <li><span class="label text-white">Выручка (Год)</span><span class="val font-bold text-white">${fmtTHB(v.revYearAll)}</span></li>
-                    <li><span class="label text-[#6b6b75] text-xs uppercase tracking-wider">База ТО / Мойки</span><span class="val text-[#cc0000] text-sm">-${fmtTHB(v.maintTotal)}</span></li>
-                    <li><span class="label text-[#6b6b75] text-xs uppercase tracking-wider">Страховка</span><span class="val text-[#cc0000] text-sm">-${fmtTHB(v.insTotal)}</span></li>
-                    <li class="border-t border-[#333] pt-3 mt-2"><span class="label font-bold text-white uppercase tracking-wider text-sm">Чистая Прибыль</span><span class="val text-green-500 font-bold text-xl">${fmtTHB(v.profitYearAll)}</span></li>
+                    <li><span class="label text-[#6b6b75] text-[10px] md:text-xs uppercase tracking-wider">База ТО / Мойки</span><span class="val text-[#cc0000] text-sm">-${fmtTHB(v.maintTotal)}</span></li>
+                    <li><span class="label text-[#6b6b75] text-[10px] md:text-xs uppercase tracking-wider">Страховка</span><span class="val text-[#cc0000] text-sm">-${fmtTHB(v.insTotal)}</span></li>
+                    <li class="border-t border-[#333] pt-3 mt-2"><span class="label font-bold text-white uppercase tracking-wider text-xs md:text-sm">Чистая Прибыль</span><span class="val text-green-500 font-bold text-lg md:text-xl">${fmtTHB(v.profitYearAll)}</span></li>
                 </ul>
             </div>`;
             
@@ -726,14 +768,14 @@
         fleetCurrent.forEach(v => {
             const badge = v.type === 'auto' ? '<span class="type-badge">AUTO</span>' : '<span class="type-badge moto">MOTO</span>';
             html += `<tr>
-                <td>${badge}</td>
-                <td><input type="text" class="text-left" id="adm-name-${v.id}" value="${v.name}"></td>
-                <td><input type="number" id="adm-qty-${v.id}" value="${v.qty}" min="0" oninput="syncTableToBudget()"></td>
-                <td><input type="number" step="100" id="adm-buy-${v.id}" value="${v.priceBuy}" oninput="syncTableToBudget()"></td>
-                <td><input type="number" step="100" id="adm-maint-${v.id}" value="${v.maintBase}"></td>
-                <td><input type="number" step="100" id="adm-ins-${v.id}" value="${v.insBase}"></td>
-                <td><input type="number" step="100" id="adm-pday-${v.id}" value="${v.priceDay}"></td>
-                <td><input type="number" step="100" id="adm-pmo-${v.id}" value="${v.priceMonth}"></td>
+                <td data-label="ТИП">${badge}</td>
+                <td data-label="МОДЕЛЬ"><input type="text" class="text-left md:text-right" id="adm-name-${v.id}" value="${v.name}"></td>
+                <td data-label="КОЛ-ВО"><input type="number" id="adm-qty-${v.id}" value="${v.qty}" min="0" oninput="syncTableToBudget()"></td>
+                <td data-label="ЗАКУПКА (THB)"><input type="number" step="100" id="adm-buy-${v.id}" value="${v.priceBuy}" oninput="syncTableToBudget()"></td>
+                <td data-label="БАЗА ТО (THB)"><input type="number" step="100" id="adm-maint-${v.id}" value="${v.maintBase}"></td>
+                <td data-label="СТРАХОВКА (THB)"><input type="number" step="100" id="adm-ins-${v.id}" value="${v.insBase}"></td>
+                <td data-label="СУТКИ (THB)"><input type="number" step="100" id="adm-pday-${v.id}" value="${v.priceDay}"></td>
+                <td data-label="МЕСЯЦ (THB)"><input type="number" step="100" id="adm-pmo-${v.id}" value="${v.priceMonth}"></td>
             </tr>`;
         });
         document.getElementById('admin-table-body').innerHTML = html;
@@ -1056,7 +1098,8 @@
     function closeSettingsOnClickOutside(event) {
         const drawer = document.getElementById('settings-drawer');
         const settingsBtn = document.getElementById('btn-toggle-settings');
-        if (!drawer.contains(event.target) && !settingsBtn.contains(event.target)) {
+        const settingsBtnMob = document.getElementById('btn-toggle-settings-mob');
+        if (!drawer.contains(event.target) && !settingsBtn.contains(event.target) && (!settingsBtnMob || !settingsBtnMob.contains(event.target))) {
             closeSettings();
         }
     }
